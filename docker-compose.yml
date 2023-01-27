@@ -1,8 +1,14 @@
-version: '3.9'
+version: '3.4'
 
 services:
   postgres:
     image: postgres
+    environment:
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+      POSTGRES_TEST_DB: mytestdb
     ports:
       - '5432:5432'
     env_file:
