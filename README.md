@@ -6,10 +6,8 @@
 2. Adjust the docker-compose.yml file according to your system; specifically the version of docker-compose installed and the environment variables.
 3. Create the .env file then the database.json file and fill them approprietly.
 4. Run `docker-compose build` and then `docker-compose up` in a terminal to start the application container.
-
 **Note**: These commands require administrator privileges.
 5. Run `docker exec -ti name-of-container psql -U name-of-your-user name-of-your-db` in an other terminal to get into psql.
-
 **Note**: Run `docker-compose ps` to see the name of the container.
 6. Run `db-migrate up` in a terminal to apply migrations on the database.
 7. Finally, run `yarn watch` to start the application and you can test endpoints in postman at `http://localhost:3000`.
