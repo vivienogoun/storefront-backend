@@ -1,10 +1,12 @@
 import client from "../database";
+import bcrypt from 'bcrypt'
 
 export type User = {
     id?: Number;
     firstname: String;
     lastname: String;
-    password_digest: String;
+    username: String;
+    password: String;
 }
 
 export class UserStore {
@@ -37,15 +39,41 @@ export class UserStore {
 
     async create(u: User): Promise<User> {
         try {
-            const sql = 'INSERT INTO users (firstname, lastname, password_digest) VALUES ($1, $2, $3) RETURNING *'
+            const sql = 'INSERT INTO users (firstname, lastname, username, password_digest) VALUES ($1, $2, $3, $4) RETURNING *'
             // @ts-ignore
             const conn = await client.connect()
-            const result = await conn.query(sql, [u.firstname, u.lastname, u.password_digest])
+            const {
+                BCRYPT_PASSWORD,
+                SALT_ROUNDS,
+            } = process.env
+            const hash = bcrypt.hashSync(
+                u.password + ((BCRYPT_PASSWORD as unknown) as string),
+                parseInt(((SALT_ROUNDS as unknown) as string))
+            )
+            const result = await conn.query(sql, [u.firstname, u.lastname, u.username, hash])
             const user = result.rows[0]
             conn.release()
             return user
         } catch (err) {
-            throw new Error(`Could not create user ${u.firstname}. Error: ${err}`)
+            throw new Error(`Could not create user ${u.username}. Error: ${err}`)
+        }
+    }
+
+    async authenticate(username: string, password: string): Promise<User | null> {
+        try {
+            const sql = 'SELECT password_digest FROM users WHERE username=$1'
+            // @ts-ignore
+            const conn = await client.connect()
+            const result = await conn.query(sql, [username])
+            if(result.rows.length) {
+                const user = result.rows[0]
+                if(bcrypt.compareSync(password+process.env.BCRYPT_PASSWORD, user.password_digest)) {
+                    return user
+                }
+            }
+            return null
+        } catch (err) {
+            throw new Error(`Could not sign in user ${username}. Error: ${err}`)
         }
     }
 }
