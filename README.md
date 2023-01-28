@@ -2,14 +2,30 @@
 
 ## Instructions for Setting Up and Running the Project
 
-1. Run `yarn` in your terminal. 
+1. Run `yarn` in your terminal to install required packages.
+
 2. Adjust the docker-compose.yml file according to your system; specifically the version of docker-compose installed and the environment variables.
-3. Create the .env file then the database.json file and fill them approprietly.
+
+3. Create the .env file with the following format:
+`POSTGRES_HOST=127.0.0.1`
+`POSTGRES_USER=myuser`
+`POSTGRES_PASSWORD=`
+`POSTGRES_DB=mydb`
+`POSTGRES_TEST_DB=mytestdb`
+`ENV=dev`
+`BCRYPT_PASSWORD=my-storefront-backend-password`
+`SALT_ROUNDS=10`
+`TOKEN_SECRET=@storefrontbackend`
+Make sure to fill your choosen password in this file as well as in the database.json file and the docker-compose.yml file in the dedicated places.
+
 4. Run `docker-compose build` and then `docker-compose up` in a terminal to start the application container.
 **Note**: These commands require administrator privileges.
+
 5. Run `docker exec -ti name-of-container psql -U name-of-your-user name-of-your-db` in an other terminal to get into psql.
-**Note**: Run `docker-compose ps` to see the name of the container.
-6. Run `db-migrate up` in a terminal to apply migrations on the database.
+**Note**: Run `docker-compose ps` to see the name of the running container.
+
+6. Run `db-migrate up` in a terminal to apply migrations on your database.
+
 7. Finally, run `yarn watch` to start the application and you can test endpoints in postman at `http://localhost:3000`.
 
 ## Instructions to Build the Project from Scratch
